@@ -1,0 +1,41 @@
+Exit code: 0
+Wall time: 2.7 seconds
+Output:
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>拾光 · 生活觉察</title>
+  <style>
+    :root{--ink:#4b3d49;--muted:#988c98;--lav:#9c78d8;--coral:#f4867d;--paper:#fffdf8}
+    *{box-sizing:border-box} body{margin:0;background:#fff8ed;color:var(--ink);font-family:"Arial Rounded MT Bold","Trebuchet MS","PingFang SC","Microsoft YaHei",sans-serif}
+    .top{height:70px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:rgba(255,253,248,.96);border-bottom:1px solid #f0e7dc;position:sticky;top:0;z-index:5}
+    .brand{font-size:20px;font-weight:900;white-space:nowrap}.brand span{display:inline-grid;place-items:center;width:28px;height:28px;background:var(--lav);color:#fff;border-radius:50% 50% 50% 5px;margin-right:8px}
+    .tabs{display:flex;gap:7px;overflow-x:auto;padding:5px 0}.tab{border:0;border-radius:99px;padding:9px 13px;background:#f5efe9;color:var(--muted);cursor:pointer;font:inherit;font-size:12px;white-space:nowrap}.tab.active{background:var(--lav);color:#fff;font-weight:bold}
+    .frame{width:100%;height:calc(100vh - 70px);border:0;display:block;background:#fff8ed}
+    @media(max-width:720px){.top{height:116px;display:block;padding:14px 16px 10px}.brand{height:34px}.tabs{margin:0 -4px}.frame{height:calc(100vh - 116px)}.tab{padding:8px 11px}}
+  </style>
+</head>
+<body>
+  <header class="top">
+    <div class="brand"><span>✦</span>拾光</div>
+    <nav class="tabs" aria-label="主要栏目">
+      <button class="tab active" onclick="openPage('feed.html',this)">极简内容流</button>
+      <button class="tab" onclick="openPage('record.html',this)">智能记录</button>
+      <button class="tab" onclick="openPage('diary.html',this)">AI 日记</button>
+      <button class="tab" onclick="openPage('planner.html',this)">我的手账</button>
+      <button class="tab" onclick="openPage('practice.html',this)">正念显化</button>
+    </nav>
+  </header>
+  <iframe class="frame" id="frame" src="feed.html" title="拾光生活觉察应用"></iframe>
+  <script>
+    function openPage(page, button){
+      document.getElementById('frame').src=page;
+      document.querySelectorAll('.tab').forEach(item=>item.classList.remove('active'));
+      button.classList.add('active');
+    }
+  </script>
+</body>
+</html>
+
