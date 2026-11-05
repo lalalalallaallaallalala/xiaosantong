@@ -77,10 +77,10 @@ function beginGeneration() {
 function populateResult() {
   const strongest = state.scores.indexOf(Math.max(...state.scores));
   const profiles = [
-    { score: 81, keywords: '勇气 · 展开 · 被看见', message: '你正在从“等待确定”走向“允许开始”。', gradient: 'violet', phrase: 'I AM READY<br>TO BE SEEN' },
-    { score: 78, keywords: '流动 · 信任 · 丰盛', message: '你正在从“用力证明”走向“允许发生”。', gradient: 'green', phrase: 'I AM OPEN<br>TO RECEIVING' },
-    { score: 84, keywords: '聚焦 · 落地 · 成长', message: '你正在从“想得更多”走向“把愿望变成一步”。', gradient: 'orange', phrase: 'I TURN<br>VISION INTO FORM' },
-    { score: 76, keywords: '柔软 · 安定 · 滋养', message: '你正在从“独自撑住”走向“让自己也被照顾”。', gradient: 'rose', phrase: 'I AM HELD<br>AND SUPPORTED' }
+    { score: 81, keywords: '勇气 · 展开 · 被看见', message: '你正在从“等待确定”走向“允许开始”。', palette: 'amber', element: '火 · 光与行动' },
+    { score: 78, keywords: '流动 · 信任 · 丰盛', message: '你正在从“用力证明”走向“允许发生”。', palette: 'indigo', element: '水 · 深海流动' },
+    { score: 84, keywords: '聚焦 · 落地 · 成长', message: '你正在从“想得更多”走向“把愿望变成一步”。', palette: 'pastel', element: '木 · 柔软生长' },
+    { score: 76, keywords: '柔软 · 安定 · 滋养', message: '你正在从“独自撑住”走向“让自己也被照顾”。', palette: 'lavender', element: '土 · 稳定滋养' }
   ];
   const resultProfile = profiles[strongest];
   $('#energy-score').textContent = resultProfile.score;
@@ -90,32 +90,60 @@ function populateResult() {
   const ring = $('.energy-ring');
   ring.style.background = `radial-gradient(circle at center,transparent 54%,rgba(237,200,149,.1) 55%,rgba(237,200,149,.1) 56%,transparent 57%),conic-gradient(var(--gold) 0 ${resultProfile.score}%,rgba(248,244,238,.08) ${resultProfile.score}% 100%)`;
   $('.meter span').style.width = `${resultProfile.score}%`;
-  $('#wallpaper-intention').innerHTML = resultProfile.phrase;
   const art = $('#wallpaper-art');
-  art.dataset.palette = resultProfile.gradient;
-  art.style.background = palette(resultProfile.gradient);
+  art.dataset.palette = resultProfile.palette;
+  art.classList.add('motion-on');
   state.resultProfile = resultProfile;
 }
 
-function palette(name) {
-  const palettes = { violet: 'radial-gradient(circle at 30% 26%,#dcb2dd 0,#936fa4 20%,transparent 45%),radial-gradient(circle at 70% 70%,#5b668e 0,#25244e 43%,#111226 78%)', green: 'radial-gradient(circle at 30% 26%,#e0b880 0,#af7485 20%,transparent 45%),radial-gradient(circle at 70% 70%,#57766d 0,#24254d 43%,#111226 78%)', orange: 'radial-gradient(circle at 30% 26%,#f3c178 0,#b66d54 20%,transparent 45%),radial-gradient(circle at 70% 70%,#526a69 0,#262441 43%,#111226 78%)', rose: 'radial-gradient(circle at 30% 26%,#f3b89d 0,#b56d89 20%,transparent 45%),radial-gradient(circle at 70% 70%,#5a6f88 0,#26213f 43%,#111226 78%)' };
-  return palettes[name] || palettes.green;
+$('#download-wallpaper').addEventListener('click', () => { downloadWallpaper(); showToast('正在保存你的显化壁纸预览'); });
+$('#download-motion').addEventListener('click', downloadMotionWallpaper);
+$('#buy-button').addEventListener('click', () => showToast('这是演示入口：正式上线后可替换为电商平台商品链接'));
+
+function wallpaperColors() {
+  const palettes = {
+    indigo: ['#b9d5ff', '#718bd0', '#1b2868', '#0a102b', '#d7edff'],
+    pastel: ['#fff8ef', '#e8d8ef', '#c4e7d9', '#fbf6f1', '#f5cbd3'],
+    lavender: ['#ffeaf8', '#c993c6', '#7461aa', '#211a45', '#f3d9fa'],
+    amber: ['#ffe5ae', '#d28c89', '#53627b', '#1c1936', '#fff1c7']
+  };
+  return palettes[state.resultProfile?.palette] || palettes.indigo;
 }
 
-$('#download-wallpaper').addEventListener('click', () => { downloadWallpaper(); showToast('正在保存你的显化壁纸预览'); });
-$('#buy-button').addEventListener('click', () => showToast('这是演示入口：正式上线后可替换为电商平台商品链接'));
+function drawWallpaper(ctx, time = 0) {
+  const colors = wallpaperColors();
+  const width = 1170; const height = 2532; const cx = 585; const cy = 1150;
+  ctx.clearRect(0, 0, width, height);
+  const base = ctx.createLinearGradient(0, 0, width, height); base.addColorStop(0, colors[0]); base.addColorStop(.25, colors[1]); base.addColorStop(.67, colors[2]); base.addColorStop(1, colors[3]); ctx.fillStyle = base; ctx.fillRect(0, 0, width, height);
+  const glow = ctx.createRadialGradient(300, 420, 8, 330, 450, 850); glow.addColorStop(0, colors[4] + 'd0'); glow.addColorStop(1, colors[4] + '00'); ctx.fillStyle = glow; ctx.fillRect(0, 0, width, 1500);
+  ctx.save(); ctx.translate(cx, cy); ctx.rotate(.38 + time * .035); ctx.strokeStyle = 'rgba(235,245,255,.55)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.ellipse(0, 0, 720, 260, 0, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
+  ctx.save(); ctx.translate(cx, cy); ctx.rotate(-.7 - time * .025); ctx.strokeStyle = 'rgba(228,235,255,.34)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.ellipse(0, 0, 570, 360, 0, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
+  ctx.save(); ctx.translate(cx, cy); ctx.rotate(.08 - time * .02); ctx.strokeStyle = 'rgba(255,255,255,.16)'; ctx.beginPath(); ctx.ellipse(0, 0, 420, 520, 0, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
+  const orb = ctx.createRadialGradient(500, 930, 30, cx, cy, 370); orb.addColorStop(0, colors[4]); orb.addColorStop(.27, colors[1]); orb.addColorStop(.65, colors[2]); orb.addColorStop(1, colors[3]); ctx.fillStyle = orb; ctx.beginPath(); ctx.arc(cx, cy, 310 + Math.sin(time * 1.1) * 7, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = 'rgba(255,255,255,.42)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(cx, cy, 270 + Math.sin(time * .9) * 5, 0, Math.PI * 2); ctx.stroke(); ctx.strokeStyle = 'rgba(235,245,255,.18)'; ctx.beginPath(); ctx.arc(cx, cy, 340, 0, Math.PI * 2); ctx.stroke();
+  const stars = [[205,540,.9],[900,610,.75],[800,430,.65],[275,1680,.8],[955,1750,.65],[410,420,.55],[780,1920,.6],[185,1980,.45],[1010,1160,.5],[160,1030,.45],[970,220,.4],[330,2100,.45]];
+  stars.forEach(([x,y,s], index) => { const pulse = .65 + Math.sin(time * 2 + index) * .25; ctx.globalAlpha = pulse; ctx.fillStyle = index % 3 === 0 ? colors[4] : '#f2f5ff'; ctx.beginPath(); ctx.arc(x + Math.sin(time * .18 + index) * 5, y + Math.cos(time * .16 + index) * 7, 5 * s, 0, Math.PI * 2); ctx.fill(); }); ctx.globalAlpha = 1;
+  const petals = [[210,900,.85],[905,950,.75],[255,1520,.6],[900,1450,.7],[350,650,.48],[790,1680,.5]];
+  petals.forEach(([x,y,s], index) => { ctx.save(); ctx.translate(x + Math.sin(time * .3 + index) * 16, y + Math.cos(time * .22 + index) * 18); ctx.rotate(.5 + Math.sin(time * .25 + index)); ctx.fillStyle = index % 2 ? 'rgba(240,205,221,.48)' : 'rgba(208,237,226,.45)'; ctx.beginPath(); ctx.ellipse(0, 0, 10 * s, 22 * s, 0, 0, Math.PI * 2); ctx.fill(); ctx.restore(); });
+}
 
 function downloadWallpaper() {
   const canvas = document.createElement('canvas'); canvas.width = 1170; canvas.height = 2532;
-  const ctx = canvas.getContext('2d');
-  const gradient = ctx.createRadialGradient(330, 500, 10, 780, 1850, 1700); gradient.addColorStop(0, '#c8907e'); gradient.addColorStop(.22, '#6e548d'); gradient.addColorStop(.58, '#222446'); gradient.addColorStop(1, '#0d1020'); ctx.fillStyle = gradient; ctx.fillRect(0, 0, canvas.width, canvas.height);
-  const glow = ctx.createRadialGradient(330, 450, 10, 330, 450, 650); glow.addColorStop(0, 'rgba(242,204,147,.85)'); glow.addColorStop(1, 'rgba(242,204,147,0)'); ctx.fillStyle = glow; ctx.fillRect(0, 0, canvas.width, 1300);
-  ctx.save(); ctx.translate(585, 1150); ctx.rotate(.38); ctx.strokeStyle = 'rgba(237,200,149,.45)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.ellipse(0, 0, 720, 260, 0, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
-  ctx.save(); ctx.translate(585, 1150); ctx.rotate(-.7); ctx.strokeStyle = 'rgba(149,189,150,.4)'; ctx.beginPath(); ctx.ellipse(0, 0, 570, 360, 0, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
-  const orb = ctx.createRadialGradient(500, 930, 30, 585, 1150, 370); orb.addColorStop(0, '#f0ca8b'); orb.addColorStop(.28, '#bd7793'); orb.addColorStop(.68, '#63519a'); orb.addColorStop(1, '#20213c'); ctx.fillStyle = orb; ctx.beginPath(); ctx.arc(585, 1150, 310, 0, Math.PI * 2); ctx.fill();
-  ctx.fillStyle = 'rgba(255,240,210,.75)'; ctx.font = '18px monospace'; ctx.textAlign = 'center'; ctx.letterSpacing = '5px'; ctx.fillText('MY INTENTION', 585, 1090); ctx.fillStyle = '#fff4df'; ctx.font = '42px serif'; const lines = $('#wallpaper-intention').innerText.split('\n'); lines.forEach((line, index) => ctx.fillText(line, 585, 1180 + index * 68));
-  ctx.fillStyle = 'rgba(248,244,238,.75)'; ctx.font = '14px monospace'; ctx.textAlign = 'left'; ctx.fillText('灵场 LAB · PERSONAL FREQUENCY', 70, 2400); ctx.textAlign = 'right'; ctx.fillText('01 / 01', 1100, 2400);
+  drawWallpaper(canvas.getContext('2d'), 0);
   const link = document.createElement('a'); link.download = 'lingchang-lab-wallpaper.png'; link.href = canvas.toDataURL('image/png'); link.click();
+}
+
+function downloadMotionWallpaper() {
+  const canvas = document.createElement('canvas'); canvas.width = 1170; canvas.height = 2532;
+  if (!canvas.captureStream || !window.MediaRecorder) { showToast('当前浏览器暂不支持动态导出，可先保存静态 PNG'); return; }
+  const mime = ['video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm'].find((type) => MediaRecorder.isTypeSupported(type));
+  if (!mime) { showToast('当前浏览器暂不支持动态导出，可先保存静态 PNG'); return; }
+  const chunks = []; const recorder = new MediaRecorder(canvas.captureStream(24), { mimeType: mime }); const start = performance.now(); const ctx = canvas.getContext('2d');
+  recorder.ondataavailable = (event) => { if (event.data.size) chunks.push(event.data); };
+  recorder.onstop = () => { const blob = new Blob(chunks, { type: mime }); const link = document.createElement('a'); link.download = 'lingchang-lab-motion-wallpaper.webm'; link.href = URL.createObjectURL(blob); link.click(); setTimeout(() => URL.revokeObjectURL(link.href), 1000); showToast('动态壁纸已准备好，可以下载'); };
+  recorder.start();
+  function render(now) { const elapsed = (now - start) / 1000; drawWallpaper(ctx, elapsed); if (elapsed < 6) requestAnimationFrame(render); else recorder.stop(); }
+  requestAnimationFrame(render); showToast('正在生成 6 秒轻动态壁纸');
 }
 
 let toastTimer;
