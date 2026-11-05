@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0d0c1b" />
+    <meta name="description" content="灵场 Lab：用一组自我探索问题，生成属于你的显化能量壁纸。" />
+    <title>灵场 Lab · 你的能量，值得被看见</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="noise" aria-hidden="true"></div>
+
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="灵场 Lab 首页">
+        <span class="brand-mark"><i></i><i></i><i></i></span>
+        <span>灵场 <em>LAB</em></span>
+      </a>
+      <nav class="main-nav" aria-label="主导航">
+        <a href="#how-it-works">如何开始</a>
+        <a href="#rituals">显化灵感</a>
+        <a href="#faq">常见问题</a>
+      </nav>
+      <button class="header-cta" type="button" data-scroll-to="quiz-shell">开始测试 <span>↗</span></button>
+    </header>
+
+    <main id="top">
+      <section class="hero section-shell" id="hero">
+        <div class="hero-copy">
+          <p class="eyebrow"><span class="eyebrow-dot"></span> INTENTION · ENERGY · IMAGE</p>
+          <h1>你的能量，<br /><span>值得被看见。</span></h1>
+          <p class="hero-lede">用 30 个问题，听见当下的内在频率。<br />再把你的愿望，变成一张每天都能看见的显化壁纸。</p>
+          <div class="hero-actions">
+            <button class="primary-button" type="button" data-scroll-to="quiz-shell">开始我的能量测试 <span>→</span></button>
+            <span class="tiny-note">约 3 分钟 · 免费测试</span>
+          </div>
+          <div class="hero-proof">
+            <div class="avatar-stack" aria-hidden="true"><span>M</span><span>Y</span><span>L</span><span>+</span></div>
+            <p><strong>2,468</strong> 人已经找到自己的能量关键词</p>
+          </div>
+        </div>
+        <div class="hero-orbit" aria-label="抽象能量轨道视觉">
+          <div class="orbit orbit-one"></div>
+          <div class="orbit orbit-two"></div>
+          <div class="orbit orbit-three"></div>
+          <div class="hero-sun"><span>愿</span><small>INTENTION</small></div>
+          <span class="orbit-label label-one">FOCUS</span>
+          <span class="orbit-label label-two">FLOW</span>
+          <span class="orbit-label label-three">TRUST</span>
+          <div class="floating-card card-top"><span>今日能量</span><strong>柔软而坚定</strong><i>✦</i></div>
+          <div class="floating-card card-bottom"><span>显化方向</span><strong>丰盛 · 关系 · 自我</strong><i>↗</i></div>
+        </div>
+      </section>
+
+      <section class="marquee-strip" aria-label="灵场 Lab 核心理念">
+        <div class="marquee-track"><span>INTENTION IS A FREQUENCY</span><b>✦</b><span>MAKE YOUR INNER WORLD VISIBLE</span><b>✦</b><span>INTENTION IS A FREQUENCY</span><b>✦</b></div>
+      </section>
+
+      <section class="intro section-shell" id="how-it-works">
+        <div class="section-heading">
+          <p class="eyebrow">A SMALL RITUAL FOR YOURSELF</p>
+          <h2>不是预测，<br /><em>是一次与自己对齐。</em></h2>
+        </div>
+        <div class="intro-text"><p>我们把心理自省、东方意象与生成式视觉揉在一起，让你在忙乱的日常里，留出一小段只属于自己的时间。</p><a href="#rituals" class="text-link">看看这份仪式如何发生 <span>↘</span></a></div>
+      </section>
+
+      <section class="steps section-shell">
+        <article class="step-card"><span class="step-number">01</span><div class="step-icon icon-pulse">⌁</div><h3>测一测</h3><p>用 30 个轻盈的问题，捕捉你此刻的情绪与行动倾向。</p></article>
+        <article class="step-card"><span class="step-number">02</span><div class="step-icon icon-orbit">◌</div><h3>读一读</h3><p>结合你的显化目标与可选出生信息，得到一份专属能量画像。</p></article>
+        <article class="step-card"><span class="step-number">03</span><div class="step-icon icon-star">✦</div><h3>带走它</h3><p>把你的关键词生成一张手机壁纸，作为每天的视觉锚点。</p></article>
+      </section>
+
+      <section class="quiz-section section-shell" id="quiz-shell">
+        <div class="quiz-intro" id="quiz-intro">
+          <p class="eyebrow">THE INNER FREQUENCY CHECK-IN</p>
+          <h2>先从现在的你开始。</h2>
+          <p>没有标准答案。选一个最接近你此刻状态的选项即可。</p>
+          <div class="quiz-meta"><span><b>30</b> 道问题</span><span><b>3</b> 分钟左右</span><span><b>100%</b> 私密体验</span></div>
+          <button class="primary-button" id="start-quiz" type="button">进入测试 <span>→</span></button>
+        </div>
+
+        <div class="quiz-panel hidden" id="quiz-panel">
+          <div class="quiz-topline"><span id="question-count">01 / 30</span><span class="quiz-status">INNER FREQUENCY CHECK-IN</span></div>
+          <div class="progress-line"><span id="progress-fill"></span></div>
+          <div class="question-card">
+            <p class="question-category" id="question-category">当下状态 · NOW</p>
+            <h3 id="question-text">最近的你，醒来时更接近哪一种感觉？</h3>
+            <div class="answer-list" id="answer-list"></div>
+          </div>
+          <p class="quiz-footnote">所有答案仅用于生成本次体验结果，不构成科学、医学或财务判断。</p>
+        </div>
+
+        <div class="profile-panel hidden" id="profile-panel">
+          <div class="profile-copy"><p class="eyebrow">ONE LAST LAYER</p><h2>再告诉我一点<br /><em>关于你的时间。</em></h2><p>出生信息是可选的。如果你愿意，它会帮助我们把东方时间意象融入这次自我探索。</p></div>
+          <form class="profile-form" id="profile-form">
+            <div class="form-row"><label>出生日期 <span>可选</span><input type="date" name="birthDate" /></label><label>出生时间 <span>可选</span><input type="time" name="birthTime" /></label></div>
+            <label>出生地点 <span>可选</span><input type="text" name="birthPlace" placeholder="例如：上海" /></label>
+            <label>你现在最想显化什么？<span>必填</span><textarea name="intention" rows="3" required placeholder="例如：更稳定的收入、健康的关系、勇敢开始一件事……"></textarea></label>
+            <div class="form-actions"><button class="text-button" id="skip-profile" type="button">暂时跳过</button><button class="primary-button" type="submit">生成我的能量图谱 <span>✦</span></button></div>
+          </form>
+        </div>
+
+        <div class="loading-panel hidden" id="loading-panel"><div class="loader-orb"><span></span></div><p class="eyebrow">COMPOSING YOUR FREQUENCY</p><h2>正在把你的愿望<br /><em>翻译成一束光。</em></h2><div class="loading-steps"><span class="active">读取你的回答</span><span>提取能量关键词</span><span>绘制专属视觉</span></div></div>
+
+        <div class="result-panel hidden" id="result-panel">
+          <div class="result-heading"><div><p class="eyebrow">YOUR INNER FREQUENCY MAP</p><h2>你正在靠近<br /><em>流动的丰盛。</em></h2></div><span class="result-date">05 NOV 2026</span></div>
+          <div class="result-grid">
+            <div class="energy-card"><div class="energy-ring"><span id="energy-score">78</span><small>ENERGY<br />INDEX</small></div><p>你的能量关键词</p><h3 id="energy-keywords">流动 · 信任 · 展开</h3><div class="meter"><span></span></div><small class="muted">现在的你，正在从“用力证明”走向“允许发生”。</small></div>
+            <div class="wallpaper-card"><div class="wallpaper-art" id="wallpaper-art"><span class="wallpaper-star star-a">✦</span><span class="wallpaper-star star-b">✧</span><div class="wallpaper-orb"><small>MY INTENTION</small><strong id="wallpaper-intention">I AM OPEN<br />TO RECEIVING</strong></div><span class="wallpaper-caption">灵场 LAB · 01</span></div><div class="wallpaper-info"><div><span>你的专属显化壁纸</span><strong>锁定手机，锁定愿望</strong></div><button class="download-button" type="button" id="download-wallpaper">保存预览 ↘</button></div></div>
+          </div>
+          <div class="result-bottom"><div class="ritual-note"><span class="note-icon">☼</span><div><strong>给你的一个小仪式</strong><p>每天第一次看到这张壁纸时，闭上眼睛三秒，问自己：今天我愿意接收什么？</p></div></div><div class="offer-card"><span class="offer-tag">FOUNDING EDITION</span><h3>把这份能量带走</h3><p>高清壁纸 · 完整能量报告 · 7 天显化提示</p><div class="offer-price"><strong>¥29</strong><s>¥49</s><button type="button" class="primary-button" id="buy-button">解锁完整版本 <span>→</span></button></div></div></div>
+          <p class="disclaimer">灵场 Lab 是一项用于自我探索与视觉仪式的创意体验，不提供科学、医学、心理诊断、投资或结果保证。</p>
+        </div>
+      </section>
+
+      <section class="rituals section-shell" id="rituals">
+        <div class="section-heading"><p class="eyebrow">THE WALLPAPER RITUALS</p><h2>把愿望放在<br /><em>每天看得见的地方。</em></h2></div>
+        <div class="ritual-gallery"><div class="ritual-tile tile-purple"><span>soft power</span><strong>我允许好事<br />自然发生</strong><small>01 / 06</small></div><div class="ritual-tile tile-green"><span>new chapter</span><strong>我正在成为<br />更完整的自己</strong><small>02 / 06</small></div><div class="ritual-tile tile-orange"><span>clear path</span><strong>我相信<br />下一步会出现</strong><small>03 / 06</small></div></div>
+      </section>
+
+      <section class="faq section-shell" id="faq"><div class="section-heading"><p class="eyebrow">QUESTIONS, GENTLY ANSWERED</p><h2>你可能会<br /><em>想知道这些。</em></h2></div><div class="faq-list"><details open><summary>这是真正的八字测算吗？<span>＋</span></summary><p>第一版产品把出生信息作为可选的个性化输入，重点是自我探索与视觉表达。正式上线时，可以接入可靠的历法与命理计算服务，并明确说明方法与边界。</p></details><details><summary>壁纸是怎么生成的？<span>＋</span></summary><p>系统会根据你的回答、显化目标和视觉偏好生成关键词，再交给图像模型制作独属于你的视觉版本。当前展示页使用的是演示视觉。</p></details><details><summary>购买后我会得到什么？<span>＋</span></summary><p>建议的首发套餐包括高清手机壁纸、完整能量报告和 7 天显化提示。支付、交付和下载权限可以在下一阶段接入。</p></details></div></section>
+
+      <section class="closing section-shell"><div class="closing-symbol">✦</div><p class="eyebrow">YOUR NEXT CHAPTER IS ALREADY IN MOTION</p><h2>从一束意念开始，<br /><em>让它有一个形状。</em></h2><button class="primary-button" type="button" data-scroll-to="quiz-shell">开始我的测试 <span>→</span></button></section>
+    </main>
+
+    <footer class="site-footer section-shell"><div class="footer-brand"><span class="brand-mark"><i></i><i></i><i></i></span><span>灵场 Lab</span></div><p>一份温柔的自我探索工具。</p><div class="footer-links"><a href="#faq">使用说明</a><a href="#faq">隐私与边界</a><span>© 2026 灵场 Lab</span></div></footer>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="app.js"></script>
+  </body>
+</html>
+
