@@ -75,4 +75,5 @@ h1 span,h2 em { color:var(--gold); font-style:normal; }
 @keyframes star-flicker{0%,100%{opacity:.4;transform:scale(.8)}42%{opacity:1;transform:scale(1.25)}66%{opacity:.62;transform:scale(.95)}}
 @keyframes petal-float{0%,100%{transform:translate3d(0,0,0) rotate(35deg)}50%{transform:translate3d(10px,-12px,0) rotate(56deg)}}
 @media (max-width:580px){.wallpaper-actions{width:100%;flex-direction:column;gap:8px}.wallpaper-actions .download-button{width:100%}.wallpaper-constellation{width:86%}}
+.recipe-note{display:block;margin-top:15px;color:var(--gold);font-family:var(--mono);font-size:9px;letter-spacing:.06em}.wallpaper-art:before{transform:rotate(var(--orbit-tilt,42deg));}.wallpaper-art:after{transform:rotate(var(--orbit-tilt-neg,-42deg));}.wallpaper-constellation{transform:rotate(var(--constellation-tilt,-23deg));}.wallpaper-art.motion-on .wallpaper-orb{animation-duration:var(--motion-speed,5.8s);transform:scale(var(--orb-scale,1));}
 
