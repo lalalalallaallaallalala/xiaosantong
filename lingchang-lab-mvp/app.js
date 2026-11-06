@@ -74,62 +74,112 @@ function beginGeneration() {
   setTimeout(() => { loading.classList.add('hidden'); result.classList.remove('hidden'); populateResult(); scrollToId('quiz-shell'); }, 2350);
 }
 
+const ELEMENT_NAMES = ['木', '火', '土', '金', '水'];
+const VISUAL_MOTIFS = [
+  { name: 'moon-garden', label: '月光花园' },
+  { name: 'celestial-portal', label: '星象门户' },
+  { name: 'floating-bloom', label: '漂浮花束' },
+  { name: 'orbit-ribbon', label: '轨道丝带' },
+  { name: 'deep-constellation', label: '深海星群' }
+];
+const ELEMENT_VISUALS = {
+  木: { cssPalette: 'pastel', colors: ['#fff8ef', '#d8e9dd', '#b7dcd2', '#f4e8ef', '#f4c8d2'], motion: '轻柔生长' },
+  火: { cssPalette: 'amber', colors: ['#ffe9b5', '#dfa08c', '#a86e82', '#302849', '#fff1cb'], motion: '暖光扩散' },
+  土: { cssPalette: 'pastel', colors: ['#f3e3cb', '#d1c2b0', '#b18fa3', '#555875', '#fff5dc'], motion: '缓慢呼吸' },
+  金: { cssPalette: 'lavender', colors: ['#f7f3ec', '#d9d5e7', '#b8a7cf', '#38385f', '#fff6d8'], motion: '月光闪烁' },
+  水: { cssPalette: 'indigo', colors: ['#bddaff', '#718bd0', '#263675', '#09112e', '#d7edff'], motion: '深海流动' }
+};
+
+function hashText(value) {
+  let hash = 2166136261;
+  for (let index = 0; index < value.length; index += 1) { hash ^= value.charCodeAt(index); hash = Math.imul(hash, 16777619); }
+  return hash >>> 0;
+}
+
+function seededRandom(seed) {
+  let value = seed >>> 0;
+  return () => { value += 0x6D2B79F5; let result = value; result = Math.imul(result ^ result >>> 15, result | 1); result ^= result + Math.imul(result ^ result >>> 7, result | 61); return ((result ^ result >>> 14) >>> 0) / 4294967296; };
+}
+
+function buildVisualRecipe(strongest) {
+  const profileText = JSON.stringify(state.profile || {});
+  const seed = hashText(`${state.answers.join(',')}|${state.intention}|${profileText}`);
+  const random = seededRandom(seed);
+  const elementScores = [0, 0, 0, 0, 0];
+  state.answers.forEach((answer, index) => { const main = (index * 3 + answer * 2 + seed) % 5; elementScores[main] += 1; elementScores[(main + 1) % 5] += .22; });
+  if (state.profile?.birthDate) { const date = new Date(`${state.profile.birthDate}T12:00:00`); const month = Number.isNaN(date.getTime()) ? 0 : date.getMonth() + 1; elementScores[(month + seed) % 5] += 1.7; }
+  if (state.profile?.birthTime) { const hour = Number(state.profile.birthTime.split(':')[0]) || 0; elementScores[(hour + seed) % 5] += 1.1; }
+  const primaryIndex = elementScores.indexOf(Math.max(...elementScores));
+  const element = ELEMENT_NAMES[primaryIndex];
+  const visual = ELEMENT_VISUALS[element];
+  const motif = VISUAL_MOTIFS[Math.floor(random() * VISUAL_MOTIFS.length)];
+  const stars = Array.from({ length: 22 + Math.floor(random() * 16) }, () => ({ x: .08 + random() * .84, y: .06 + random() * .86, size: .35 + random() * .95, phase: random() * Math.PI * 2, tint: random() }));
+  const petals = Array.from({ length: 5 + Math.floor(random() * 7) }, () => ({ x: .12 + random() * .76, y: .2 + random() * .62, size: .4 + random() * .8, rotation: random() * Math.PI, phase: random() * Math.PI * 2 }));
+  return { seed, element, elementScores, cssPalette: visual.cssPalette, colors: visual.colors, motion: visual.motion, motif: motif.name, motifLabel: motif.label, stars, petals, ringCount: 3 + Math.floor(random() * 3), orbitTilt: -38 + random() * 80, speed: .7 + random() * .8, orbScale: .94 + random() * .1, energyType: ['展开', '流动', '落地', '滋养'][strongest] };
+}
+
 function populateResult() {
   const strongest = state.scores.indexOf(Math.max(...state.scores));
   const profiles = [
-    { score: 81, keywords: '勇气 · 展开 · 被看见', message: '你正在从“等待确定”走向“允许开始”。', palette: 'amber', element: '火 · 光与行动' },
-    { score: 78, keywords: '流动 · 信任 · 丰盛', message: '你正在从“用力证明”走向“允许发生”。', palette: 'indigo', element: '水 · 深海流动' },
-    { score: 84, keywords: '聚焦 · 落地 · 成长', message: '你正在从“想得更多”走向“把愿望变成一步”。', palette: 'pastel', element: '木 · 柔软生长' },
-    { score: 76, keywords: '柔软 · 安定 · 滋养', message: '你正在从“独自撑住”走向“让自己也被照顾”。', palette: 'lavender', element: '土 · 稳定滋养' }
+    { score: 81, keywords: '勇气 · 展开 · 被看见', message: '你正在从“等待确定”走向“允许开始”。' },
+    { score: 78, keywords: '流动 · 信任 · 丰盛', message: '你正在从“用力证明”走向“允许发生”。' },
+    { score: 84, keywords: '聚焦 · 落地 · 成长', message: '你正在从“想得更多”走向“把愿望变成一步”。' },
+    { score: 76, keywords: '柔软 · 安定 · 滋养', message: '你正在从“独自撑住”走向“让自己也被照顾”。' }
   ];
   const resultProfile = profiles[strongest];
+  const recipe = buildVisualRecipe(strongest);
+  resultProfile.recipe = recipe;
   $('#energy-score').textContent = resultProfile.score;
   $('#energy-keywords').textContent = resultProfile.keywords;
   const energyCard = $('.energy-card');
   energyCard.querySelector('.muted').textContent = resultProfile.message;
+  $('#recipe-note').textContent = `视觉配方：${recipe.element} · ${recipe.motifLabel} · ${recipe.motion}`;
   const ring = $('.energy-ring');
   ring.style.background = `radial-gradient(circle at center,transparent 54%,rgba(237,200,149,.1) 55%,rgba(237,200,149,.1) 56%,transparent 57%),conic-gradient(var(--gold) 0 ${resultProfile.score}%,rgba(248,244,238,.08) ${resultProfile.score}% 100%)`;
   $('.meter span').style.width = `${resultProfile.score}%`;
   const art = $('#wallpaper-art');
-  art.dataset.palette = resultProfile.palette;
+  art.dataset.palette = recipe.cssPalette;
+  art.dataset.motif = recipe.motif;
+  art.style.setProperty('--orbit-tilt', `${recipe.orbitTilt}deg`);
+  art.style.setProperty('--orbit-tilt-neg', `${-recipe.orbitTilt}deg`);
+  art.style.setProperty('--constellation-tilt', `${recipe.orbitTilt * -.55}deg`);
+  art.style.setProperty('--orb-scale', recipe.orbScale);
+  art.style.setProperty('--motion-speed', `${recipe.speed}s`);
   art.classList.add('motion-on');
   state.resultProfile = resultProfile;
+  state.visualRecipe = recipe;
 }
 
-$('#download-wallpaper').addEventListener('click', () => { downloadWallpaper(); showToast('正在保存你的显化壁纸预览'); });
+$('#download-wallpaper').addEventListener('click', () => { downloadWallpaper(); showToast('正在保存你的专属显化壁纸'); });
 $('#download-motion').addEventListener('click', downloadMotionWallpaper);
 $('#buy-button').addEventListener('click', () => showToast('这是演示入口：正式上线后可替换为电商平台商品链接'));
 
-function wallpaperColors() {
-  const palettes = {
-    indigo: ['#b9d5ff', '#718bd0', '#1b2868', '#0a102b', '#d7edff'],
-    pastel: ['#fff8ef', '#e8d8ef', '#c4e7d9', '#fbf6f1', '#f5cbd3'],
-    lavender: ['#ffeaf8', '#c993c6', '#7461aa', '#211a45', '#f3d9fa'],
-    amber: ['#ffe5ae', '#d28c89', '#53627b', '#1c1936', '#fff1c7']
-  };
-  return palettes[state.resultProfile?.palette] || palettes.indigo;
+function wallpaperColors() { return state.visualRecipe?.colors || ELEMENT_VISUALS.水.colors; }
+
+function drawSoftPetal(ctx, x, y, size, rotation, color, alpha) {
+  ctx.save(); ctx.translate(x, y); ctx.rotate(rotation); ctx.globalAlpha = alpha; ctx.fillStyle = color; ctx.beginPath(); ctx.ellipse(0, 0, 12 * size, 27 * size, 0, 0, Math.PI * 2); ctx.fill(); ctx.restore(); ctx.globalAlpha = 1;
 }
 
 function drawWallpaper(ctx, time = 0) {
-  const colors = wallpaperColors();
-  const width = 1170; const height = 2532; const cx = 585; const cy = 1150;
+  const recipe = state.visualRecipe || { colors: ELEMENT_VISUALS.水.colors, stars: [], petals: [], ringCount: 4, orbitTilt: 30, speed: 1, orbScale: 1, motif: 'celestial-portal' };
+  const colors = recipe.colors; const width = 1170; const height = 2532; const cx = 585; const cy = 1150; const speed = recipe.speed;
   ctx.clearRect(0, 0, width, height);
-  const base = ctx.createLinearGradient(0, 0, width, height); base.addColorStop(0, colors[0]); base.addColorStop(.25, colors[1]); base.addColorStop(.67, colors[2]); base.addColorStop(1, colors[3]); ctx.fillStyle = base; ctx.fillRect(0, 0, width, height);
-  const glow = ctx.createRadialGradient(300, 420, 8, 330, 450, 850); glow.addColorStop(0, colors[4] + 'd0'); glow.addColorStop(1, colors[4] + '00'); ctx.fillStyle = glow; ctx.fillRect(0, 0, width, 1500);
-  ctx.save(); ctx.translate(cx, cy); ctx.rotate(.38 + time * .035); ctx.strokeStyle = 'rgba(235,245,255,.55)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.ellipse(0, 0, 720, 260, 0, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
-  ctx.save(); ctx.translate(cx, cy); ctx.rotate(-.7 - time * .025); ctx.strokeStyle = 'rgba(228,235,255,.34)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.ellipse(0, 0, 570, 360, 0, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
-  ctx.save(); ctx.translate(cx, cy); ctx.rotate(.08 - time * .02); ctx.strokeStyle = 'rgba(255,255,255,.16)'; ctx.beginPath(); ctx.ellipse(0, 0, 420, 520, 0, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
-  const orb = ctx.createRadialGradient(500, 930, 30, cx, cy, 370); orb.addColorStop(0, colors[4]); orb.addColorStop(.27, colors[1]); orb.addColorStop(.65, colors[2]); orb.addColorStop(1, colors[3]); ctx.fillStyle = orb; ctx.beginPath(); ctx.arc(cx, cy, 310 + Math.sin(time * 1.1) * 7, 0, Math.PI * 2); ctx.fill();
-  ctx.strokeStyle = 'rgba(255,255,255,.42)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(cx, cy, 270 + Math.sin(time * .9) * 5, 0, Math.PI * 2); ctx.stroke(); ctx.strokeStyle = 'rgba(235,245,255,.18)'; ctx.beginPath(); ctx.arc(cx, cy, 340, 0, Math.PI * 2); ctx.stroke();
-  const stars = [[205,540,.9],[900,610,.75],[800,430,.65],[275,1680,.8],[955,1750,.65],[410,420,.55],[780,1920,.6],[185,1980,.45],[1010,1160,.5],[160,1030,.45],[970,220,.4],[330,2100,.45]];
-  stars.forEach(([x,y,s], index) => { const pulse = .65 + Math.sin(time * 2 + index) * .25; ctx.globalAlpha = pulse; ctx.fillStyle = index % 3 === 0 ? colors[4] : '#f2f5ff'; ctx.beginPath(); ctx.arc(x + Math.sin(time * .18 + index) * 5, y + Math.cos(time * .16 + index) * 7, 5 * s, 0, Math.PI * 2); ctx.fill(); }); ctx.globalAlpha = 1;
-  const petals = [[210,900,.85],[905,950,.75],[255,1520,.6],[900,1450,.7],[350,650,.48],[790,1680,.5]];
-  petals.forEach(([x,y,s], index) => { ctx.save(); ctx.translate(x + Math.sin(time * .3 + index) * 16, y + Math.cos(time * .22 + index) * 18); ctx.rotate(.5 + Math.sin(time * .25 + index)); ctx.fillStyle = index % 2 ? 'rgba(240,205,221,.48)' : 'rgba(208,237,226,.45)'; ctx.beginPath(); ctx.ellipse(0, 0, 10 * s, 22 * s, 0, 0, Math.PI * 2); ctx.fill(); ctx.restore(); });
+  const base = ctx.createLinearGradient(0, 0, width, height); base.addColorStop(0, colors[0]); base.addColorStop(.24, colors[1]); base.addColorStop(.68, colors[2]); base.addColorStop(1, colors[3]); ctx.fillStyle = base; ctx.fillRect(0, 0, width, height);
+  const haze = ctx.createRadialGradient(290, 410, 8, 320, 470, 870); haze.addColorStop(0, colors[4] + 'd8'); haze.addColorStop(1, colors[4] + '00'); ctx.fillStyle = haze; ctx.fillRect(0, 0, width, 1500);
+  ctx.save(); ctx.translate(cx, cy); ctx.rotate(recipe.orbitTilt * Math.PI / 180 + time * .035 * speed); ctx.strokeStyle = 'rgba(235,245,255,.5)'; ctx.lineWidth = 2; for (let ring = 0; ring < recipe.ringCount; ring += 1) { ctx.globalAlpha = .65 - ring * .1; ctx.beginPath(); ctx.ellipse(0, 0, 720 - ring * 70, 260 + ring * 78, ring * .22, 0, Math.PI * 2); ctx.stroke(); } ctx.restore(); ctx.globalAlpha = 1;
+  ctx.save(); ctx.translate(cx, cy); ctx.rotate(-recipe.orbitTilt * Math.PI / 180 - time * .022 * speed); ctx.strokeStyle = 'rgba(228,235,255,.25)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.ellipse(0, 0, 550, 370, 0, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
+  if (recipe.motif === 'moon-garden') { ctx.save(); ctx.fillStyle = colors[4] + 'cc'; ctx.beginPath(); ctx.arc(278, 500, 50, 0, Math.PI * 2); ctx.fill(); ctx.globalCompositeOperation = 'destination-out'; ctx.beginPath(); ctx.arc(300, 482, 48, 0, Math.PI * 2); ctx.fill(); ctx.restore(); }
+  if (recipe.motif === 'orbit-ribbon') { ctx.save(); ctx.strokeStyle = colors[4] + '99'; ctx.lineWidth = 3; for (let line = 0; line < 7; line += 1) { ctx.beginPath(); ctx.moveTo(50, 740 + line * 22); ctx.bezierCurveTo(320, 480 + line * 34, 740, 620 - line * 15, 1110, 330 + line * 66); ctx.stroke(); } ctx.restore(); }
+  const orbRadius = 310 * recipe.orbScale + Math.sin(time * 1.1 * speed) * 7;
+  const orb = ctx.createRadialGradient(500, 930, 30, cx, cy, 370); orb.addColorStop(0, colors[4]); orb.addColorStop(.28, colors[1]); orb.addColorStop(.68, colors[2]); orb.addColorStop(1, colors[3]); ctx.fillStyle = orb; ctx.beginPath(); ctx.arc(cx, cy, orbRadius, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = 'rgba(255,255,255,.4)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(cx, cy, orbRadius * .87 + Math.sin(time * .9) * 5, 0, Math.PI * 2); ctx.stroke(); ctx.strokeStyle = 'rgba(235,245,255,.18)'; ctx.beginPath(); ctx.arc(cx, cy, orbRadius * 1.1, 0, Math.PI * 2); ctx.stroke();
+  recipe.stars.forEach((star, index) => { const pulse = .55 + Math.sin(time * 2 * speed + star.phase) * .3; ctx.globalAlpha = pulse; ctx.fillStyle = star.tint > .65 ? colors[4] : '#f2f5ff'; const x = star.x * width + Math.sin(time * .18 * speed + index) * 7; const y = star.y * height + Math.cos(time * .16 * speed + index) * 8; ctx.beginPath(); ctx.arc(x, y, 5 * star.size, 0, Math.PI * 2); ctx.fill(); }); ctx.globalAlpha = 1;
+  recipe.petals.forEach((petal, index) => { const x = petal.x * width + Math.sin(time * .3 * speed + petal.phase) * 18; const y = petal.y * height + Math.cos(time * .22 * speed + petal.phase) * 20; drawSoftPetal(ctx, x, y, petal.size, petal.rotation + time * .08, index % 2 ? 'rgba(240,205,221,.54)' : 'rgba(208,237,226,.5)', .7); });
+  if (recipe.motif === 'floating-bloom') { ctx.save(); ctx.translate(cx, cy); for (let petal = 0; petal < 8; petal += 1) { ctx.rotate(Math.PI / 4); drawSoftPetal(ctx, 0, -250, .85, .15, colors[4], .25); } ctx.restore(); }
 }
 
 function downloadWallpaper() {
-  const canvas = document.createElement('canvas'); canvas.width = 1170; canvas.height = 2532;
-  drawWallpaper(canvas.getContext('2d'), 0);
+  const canvas = document.createElement('canvas'); canvas.width = 1170; canvas.height = 2532; drawWallpaper(canvas.getContext('2d'), 0);
   const link = document.createElement('a'); link.download = 'lingchang-lab-wallpaper.png'; link.href = canvas.toDataURL('image/png'); link.click();
 }
 
